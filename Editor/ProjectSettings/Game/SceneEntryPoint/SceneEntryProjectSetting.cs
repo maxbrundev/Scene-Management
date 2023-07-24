@@ -1,20 +1,11 @@
 using System.Collections.Generic;
+
 using UnityEditor;
 using UnityEngine;
 
 [InitializeOnLoad]
 static class SceneEntryProjectSetting
 {
-	static SceneEntryProjectSetting()
-	{
-		var entryPoint = SceneEntryProjectSettingData.GetSettings();
-
-		if (entryPoint != null)
-		{
-			entryPoint.UpdateEditorOnPlay();
-		}
-	}
-
 	[SettingsProvider]
 	public static SettingsProvider CreateMyCustomSettingsProvider()
 	{

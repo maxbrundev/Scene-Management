@@ -28,6 +28,13 @@ class SceneEntryProjectSettingData : ScriptableObject
 	{
 		var settings = AssetDatabase.LoadAssetAtPath<SceneEntryProjectSettingData>(EditorConstants.SCENE_ENTRY_SETTING_ASSET_PATH);
 
+		if (settings == null)
+		{
+			AssetDatabase.CreateAsset(CreateInstance<SceneEntryProjectSettingData>(), EditorConstants.SCENE_ENTRY_SETTING_ASSET_PATH);
+
+			settings = AssetDatabase.LoadAssetAtPath<SceneEntryProjectSettingData>(EditorConstants.SCENE_ENTRY_SETTING_ASSET_PATH);
+		}
+
 		return settings;
 	}
 
