@@ -4,9 +4,9 @@ using UnityEditor.SceneManagement;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "SceneEntryProjectSettingData", menuName = "Editor/Data/SceneEntry")]
-class SceneEntryProjectSettingData : ScriptableObject
+public class SceneEntryProjectSettingData : ScriptableObject
 {
-	[SerializeField] public SceneData data;
+	[SerializeField] public SceneReference data;
 
 	void OnValidate()
 	{
@@ -15,13 +15,13 @@ class SceneEntryProjectSettingData : ScriptableObject
 
 	public void UpdateEditorOnPlay()
 	{
-		if (data == null || data.Scene.BuildIndex > EditorBuildSettings.scenes.Length - 1)
+		if (data == null || data.BuildIndex > EditorBuildSettings.scenes.Length - 1)
 		{
 			EditorSceneManager.playModeStartScene = null;
 			return;
 		}
 
-		EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(EditorBuildSettings.scenes[data.Scene.BuildIndex].path);
+		EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(data.Scene.Path);
 	}
 
 	internal static SceneEntryProjectSettingData GetSettings()
