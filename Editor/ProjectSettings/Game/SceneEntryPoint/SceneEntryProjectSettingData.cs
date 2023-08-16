@@ -21,7 +21,7 @@ public class SceneEntryProjectSettingData : ScriptableObject
 			return;
 		}
 
-		EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(data.Scene.Path);
+		EditorSceneManager.playModeStartScene = AssetDatabase.LoadAssetAtPath<SceneAsset>(data.Path);
 	}
 
 	internal static SceneEntryProjectSettingData GetSettings()
