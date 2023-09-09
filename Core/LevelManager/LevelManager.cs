@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class LevelManager : MonoBehaviour
 {
@@ -38,16 +39,31 @@ public class LevelManager : MonoBehaviour
 		SceneSystem.Instance.LoadScene(currentLevelData.SceneData);
 	}
 
-	public void LoadNextLevel()
+	public void LoadNextLevel(bool isUnloadingCurrentLevel)
 	{
-		SceneSystem.Instance.LoadNextScene(true);
+		var nextLevelData = data[levelDataIndex + 1];
+		bool isSingle = nextLevelData.SceneData.LoadSceneMode == LoadSceneMode.Single;
+
+		SceneSystem.Instance.LoadNextScene(!isSingle && isUnloadingCurrentLevel && SceneManager.sceneCount > 1);
 		levelDataIndex++;
 		currentLevelData = data[levelDataIndex];
 	}
 
-	public void LoadLevel(LevelData data)
+	public void LoadPreviousLevel(bool isUnloadingCurrentLevel)
 	{
-		SceneSystem.Instance.UnloadScene(currentLevelData.SceneData);
+		var previousLevelData = data[levelDataIndex - 1];
+		bool isSingle = previousLevelData.SceneData.LoadSceneMode == LoadSceneMode.Single;
+
+		SceneSystem.Instance.LoadNextScene(!isSingle && isUnloadingCurrentLevel && SceneManager.sceneCount > 1);
+		levelDataIndex--;
+		currentLevelData = data[levelDataIndex];
+	}
+
+	public void LoadLevel(LevelData data, bool isUnloadingCurrentLevel)
+	{
+		if(data.SceneData.LoadSceneMode != LoadSceneMode.Single && isUnloadingCurrentLevel && SceneManager.sceneCount > 1)
+			SceneSystem.Instance.UnloadScene(currentLevelData.SceneData);
+
 		SceneSystem.Instance.LoadScene(data.SceneData);
 
 		// - 1 because we work on the assumption that the index 0 is the Dependencies Scene and it's already loaded
@@ -57,13 +73,20 @@ public class LevelManager : MonoBehaviour
 
 	public void ReloadLevel()
 	{
-		var asyncOp = SceneSystem.Instance.UnloadScene(currentLevelData.SceneData);
-		asyncOp.completed += operation => Restart();
+		if(SceneManager.sceneCount > 1)
+		{
+			var asyncOp = SceneSystem.Instance.UnloadScene(currentLevelData.SceneData);
+			asyncOp.completed += operation => Restart(isUnloadingCurrentLevel: false);
+		}
+		else
+		{
+			Restart(isUnloadingCurrentLevel: false);
+		}
 	}
 
-	public void Restart()
+	public void Restart(bool isUnloadingCurrentLevel)
 	{
-		LoadLevel(currentLevelData);
+		LoadLevel(currentLevelData, isUnloadingCurrentLevel);
 	}
 
 	public LevelData GetCurrentLevelData()
